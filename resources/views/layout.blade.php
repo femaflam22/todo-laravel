@@ -17,6 +17,9 @@
         </button>
         <div class="collapse navbar-collapse " id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto navbar-right-top">
+                @if (Auth::user()->role == 'admin')
+                <li class="nav-item pt-3 me-2"><a href="/todo/users" class="text-dark">Users</a></li>
+                @endif
                 <li class="nav-item dropdown nav-user">
                     <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="https://img.icons8.com/dusk/100/000000/user-female-circle.png" alt="" class="rounded-circle" width="35"></a>
                     <div class="dropdown-menu dropdown-menu-right nav-user-dropdown" aria-labelledby="navbarDropdownMenuLink2">
@@ -24,6 +27,7 @@
                             <p class="mb-0 nav-user-name">{{Auth::user()->name}}</p>
                         </div>
                         <a class="dropdown-item" href="{{route('logout')}}"><i class="fas fa-power-off mr-2"></i>Logout</a>
+                        <a class="dropdown-item" href="{{route('todo.profile')}}"><i class="fas fa-user mr-2"></i>Profile</a>
                     </div>
                 </li>
             </ul>

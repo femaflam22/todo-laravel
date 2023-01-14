@@ -27,6 +27,11 @@
             {{ Session::get('done') }}
        </div>
     @endif
+    @if (Auth::user()->role == 'admin')
+    <div class="d-flex justify-content-center mt-5">
+        <a href="{{'todo.users'}}" class="btn btn-primary">Lihat Data Pengguna</a>
+    </div>
+    @else
     <div class="d-flex align-items-start justify-content-between">
         <div class="d-flex flex-column">
             <div class="h5">My Todo's</div>
@@ -106,5 +111,6 @@
             </div>
         @endforeach
     </div>
+    @endif
 </div>
 @endsection

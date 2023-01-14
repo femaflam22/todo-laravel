@@ -42,6 +42,7 @@ class TodoController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'user',
         ]);
         // redirect kemana setelah berhasil tambah data + dikirim pemberitahuan
         return redirect('/')->with('success', 'Berhasil menambahkan akun! silahkan login');
@@ -72,6 +73,58 @@ class TodoController extends Controller
     {
         Auth::logout();
         return redirect('/');
+    }
+
+    public function profile()
+    {
+        $user = User::where('id', Auth::user()->id)->first();
+        return view('dashboard.profile', compact('user'));
+    }
+
+    public function userData()
+    {
+        $users = User::all();
+        return view('dashboard.users', compact('users'));
+    }
+
+    public function error()
+    {
+        return view('dashboard.error');
+    }
+
+    public function profileUpload()
+    {
+        return view('dashboard.upload-profile');
+    }
+
+    public function changeProfile(Request $request)
+    {
+        // validasi mimes : menentukan ekstensi file yang boleh di upload
+        // image : menentukan bahwa file yg di upload hanya boleh berbentuk image
+        $request->validate([
+            'image_profile' => 'required|image|mimes:jpg,png,jpeg,gif,svg',
+        ]);
+        // memasukkan file yg di upload ke input yg name nya image_profile ke dalam variable
+        $image = $request->file('image_profile');
+        // mengubah nama file yg di upload menjadi waktu random.ekstensinya
+        $imgName = time().rand().'.'.$image->extension();
+        // cek apakah pada public/assets/img/ sudah terdapat file yang di upload
+        // jika tidak ( ! ) maka di dalam if akan dijalankan
+        // $image->getClientOriginalName() mengambil nama original dr file yg di upload
+        if(!file_exists(public_path('/assets/img/'.$image->getClientOriginalName()))){ 
+            // set tempat untuk menyimpan file nya  
+            $destinationPath = public_path('/assets/img/');
+            // memindahkan file yg diupload ke directory yg telah ditentukan sebelumnya
+            $image->move($destinationPath, $imgName);
+            $uploaded = $imgName;
+        }else {
+            $uploaded = $image->getClientOriginalName();
+        }
+        // kirim nama file ke column image_profile di db, jika berhasil akan diarahkan kembali ke hlaman profile
+        User::where('id', Auth::user()->id)->update([
+            'image_profile' => $uploaded,
+        ]);
+        return redirect()->route('todo.profile')->with('successUploadImg', 'Foto profil berhasil diperbarui!');
     }
 
     public function home()
